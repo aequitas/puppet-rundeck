@@ -80,6 +80,7 @@ define rundeck::config::resource_source(
   $url_cache           = $rundeck::params::url_cache,
   $url_timeout         = $rundeck::params::url_timeout,
   $use_default_mapping = true,
+  $aws_ec2_endpoint    = '',
 ) {
 
   include ::rundeck
@@ -318,7 +319,16 @@ define rundeck::config::resource_source(
         value   => bool2str($running_only),
         require => File[$properties_file],
       }
+      ini_setting { "resources.source.${number}.config.endpoint":
+        ensure  => present,
+        path    => $properties_file,
+        section => '',
+        setting => "resources.source.${number}.config.endpoint",
+        value   => $aws_ec2_endpoint,
+        require => File[$properties_file],
+      }
     }
+
     default: {
       err("The rundeck resource model source_type ${source_type} is not supported")
     }
